@@ -1,0 +1,13 @@
+[package]
+name = "axum-rust-microservice-ex"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8.4"
+tokio = { version = "1.38", features = ["full"] }
+diesel = { version = "2.2", features = ["postgres", "r2d2"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+dotenv = "0.15"
+thiserror = "2.0.12"
