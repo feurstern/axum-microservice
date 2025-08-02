@@ -1,13 +1,12 @@
--- Your SQL goes here
-CREATE TABLE users{
-    id SERIAL primary KEY,
-    email varchar not null,
-    first_name varchar not null,
-    last_name varchar not null,
-    role_id integer not null,
-    passsword varchar not null,
-    is_verified boolean default false,
-    created_at timestamp
-    updated_at timestamp null,
-    deleted_at timestamp null,
-}
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role_id INTEGER NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
+);
