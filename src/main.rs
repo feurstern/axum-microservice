@@ -1,18 +1,28 @@
-mod db;
-use crate::db::establish_connection;
-use axum::{Router, handler::Handler, response::Html, routing::get};
+use axum::{Router, response::Html, routing::get};
 use std::net::SocketAddr;
 use tokio;
 
+use crate::{config::config::Config, db::database::establish_connection};
+
+mod api;
+mod config;
+mod db;
+mod services;
+
 #[tokio::main]
 async fn main() {
-    let pool = establish_connection();
+    let config = Config::from_env().expect("Failed to load the configurations");
+
+    let pool = establish_connection(&config.database_url);
+
     let app: Router = Router::new().route(
         "/",
         get(|| async { Html("connected to the server!") }).with_state(pool),
     );
-    
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:2121").await.unwrap();
+
+    let addr = SocketAddr::from(([0, 0, 0, 0], config.server_port));
+
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
 
     axum::serve(listener, app.into_make_service())
         .await
