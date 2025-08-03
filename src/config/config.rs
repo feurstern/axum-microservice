@@ -6,12 +6,11 @@ pub struct Config {
 }
 
 impl Config {
-    
     pub fn from_env() -> Result<Self, env::VarError> {
         dotenv::dotenv().ok();
         Ok(Config {
-            database_url: env::var("database_url")?,
-            server_port: env::var("server_port")?.parse::<u16>().unwrap(),
+            database_url: env::var("DATABASE_URL")?,
+            server_port: env::var("SERVER_PORT")?.parse::<u16>().unwrap(),
         })
     }
 }
