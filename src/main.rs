@@ -7,7 +7,9 @@ use crate::{config::config::Config, db::database::establish_connection};
 mod api;
 mod config;
 mod db;
+mod models;
 mod services;
+mod schema;
 
 #[tokio::main]
 async fn main() {
