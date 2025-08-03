@@ -4,9 +4,10 @@ use tokio;
 
 use crate::{config::config::Config, db::database::establish_connection};
 
+mod api;
 mod config;
 mod db;
-mod api;
+mod services;
 
 #[tokio::main]
 async fn main() {
