@@ -4,6 +4,9 @@ use axum::{Router, handler::Handler, response::Html, routing::get};
 use std::net::SocketAddr;
 use tokio;
 
+
+mod config;
+
 #[tokio::main]
 async fn main() {
     let pool = establish_connection();
