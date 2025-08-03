@@ -1,4 +1,3 @@
-mod db;
 use axum::{Router, response::Html, routing::get};
 use std::net::SocketAddr;
 use tokio;
@@ -6,6 +5,9 @@ use tokio;
 use crate::{config::config::Config, db::database::establish_connection};
 
 mod config;
+mod db;
+mod api;
+
 #[tokio::main]
 async fn main() {
     let config = Config::from_env().expect("Failed to load the configurations");
