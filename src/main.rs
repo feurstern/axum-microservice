@@ -20,8 +20,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let pool = Pool::<Postgres>::connect(&config.database_url).await?;
 
-    let app: Router = Router::new().merge(other).with_state(pool);
-    
+    let app: Router = Router::new()
+        .merge(api::user::user_routes(pool));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], config.server_port));
 

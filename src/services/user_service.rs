@@ -7,6 +7,9 @@ pub async fn create_user(
     State(pool): State<Pool<Postgres>>,
     Json(new_user): Json<NewUser>,
 ) -> Result<Json<User>, (StatusCode, Json<serde_json::Value>)> {
+
+
+    // let existing_email = sqlx
     let user = sqlx::query_as!(
         User,
         r#"
