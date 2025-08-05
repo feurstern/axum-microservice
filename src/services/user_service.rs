@@ -13,7 +13,7 @@ pub async fn create_user(
     if !new_user.email.contains('@') {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(json!({"error":"Invalid email address" })),
+            Json(json!({"success" : false, "message":"Invalid email address" })),
         ));
     }
 
@@ -23,12 +23,17 @@ pub async fn create_user(
         .map_err(|e| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error"  : format!("Something went wrong : {}",e)})),
+                Json(
+                    json!({"success" : false, "message"  : format!("Something went wrong : {}",e)}),
+                ),
             )
         })?;
 
-    if existing_user.is_some(){
-        return Err((StatusCode::BAD_REQUEST, Json(json!("Email is already taken!"))));
+    if existing_user.is_some() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"success": false,  "message" :"Email is already taken!"})),
+        ));
     }
 
     let user = sqlx::query_as!(
