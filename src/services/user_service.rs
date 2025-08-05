@@ -23,7 +23,7 @@ pub async fn create_user(
         .map_err(|e| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error"  : format!("Something went wrong :" ,e)})),
+                Json(json!({"error"  : format!("Something went wrong : {}",e)})),
             )
         })?;
 
