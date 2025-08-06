@@ -10,7 +10,7 @@ use sqlx::{Pool, Postgres};
 pub async fn create_user(
     State(pool): State<Pool<Postgres>>,
     Json(new_user): Json<NewUser>,
-) -> Result<Json<User>, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if !new_user.email.contains('@') {
         return Err((
             StatusCode::BAD_REQUEST,
@@ -74,7 +74,7 @@ pub async fn create_user(
         )
     })?;
 
-    Ok(Json(user))
+    Ok(Json(json!({"success" : true,  "data" : user})))
 }
 
 // pub async fn delete_user(State(pool): State<Pool<Postgres>>, user_id: i32) -> Result<Json> {}
