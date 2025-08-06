@@ -3,6 +3,7 @@ use crate::{
     models::user::{NewUser, User},
 };
 use axum::{Json, extract::State, http::StatusCode};
+use bcrypt::{hash, DEFAULT_COST};
 use serde_json::json;
 use sqlx::{Pool, Postgres};
 
@@ -17,24 +18,37 @@ pub async fn create_user(
         ));
     }
 
-    let existing_user = sqlx::query!(r#"SELECT id from users where email=$1"#, new_user.email)
-        .fetch_optional(&pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(
-                    json!({"success" : false, "message"  : format!("Something went wrong : {}",e)}),
-                ),
-            )
-        })?;
+    let user_existing = sqlx::query!(
+        r#"SELECT 
+            id 
+           FROM 
+                users 
+            WHERE 
+                email= $1 
+            AND
+                deleted_at is null
+            "#,
+        new_user.email
+    )
+    .fetch_optional(&pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"success" : false, "message" : format!("Error : {}", e)})),
+        )
+    })?;
 
-    if existing_user.is_some() {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"success": false,  "message" :"Email is already taken!"})),
-        ));
-    }
+    if user_existing.is_some() {
+        return Err((StatusCode::BAD_REQUEST, Json(json!({"success" : false, "message" : "The email is already taken!"}))));
+    };
+
+    let hashed_password = hash(&new_user.password, DEFAULT_COST).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"success" : false, "message" : format!("Error hashed password: {}",e)}))
+        )
+    })?;
 
     let user = sqlx::query_as!(
         User,
@@ -46,7 +60,7 @@ pub async fn create_user(
         new_user.email,
         new_user.first_name,
         new_user.last_name,
-        new_user.password,
+        hashed_password,
         new_user.role_id,
         new_user.is_verified,
     )
@@ -63,4 +77,4 @@ pub async fn create_user(
     Ok(Json(user))
 }
 
-pub async fn delete_user(State(pool): State<Pool<Postgres>>, user_id: i32) {}
+// pub async fn delete_user(State(pool): State<Pool<Postgres>>, user_id: i32) -> Result<Json> {}
