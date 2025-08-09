@@ -1,4 +1,5 @@
 use axum::{Router, response::Html, routing::get};
+use sqlx::{Pool, Postgres};
 use std::net::SocketAddr;
 use tokio;
 
@@ -7,24 +8,26 @@ use crate::{config::config::Config, db::database::establish_connection};
 mod api;
 mod config;
 mod db;
+mod models;
+mod schema;
 mod services;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env().expect("Failed to load the configurations");
 
-    let pool = establish_connection(&config.database_url);
+    // let pool = establish_connection(&config.database_url);
 
-    let app: Router = Router::new().route(
-        "/",
-        get(|| async { Html("connected to the server!") }).with_state(pool),
-    );
+    let pool = Pool::<Postgres>::connect(&config.database_url).await?;
+
+    let app: Router = Router::new()
+        .merge(api::user::user_routes(pool));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], config.server_port));
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
 
-    axum::serve(listener, app.into_make_service())
-        .await
-        .unwrap();
+    axum::serve(listener, app).await?;
+
+    Ok(())
 }

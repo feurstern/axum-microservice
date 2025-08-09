@@ -9,11 +9,11 @@ pub enum ApiError {
     Internal(String),
 }
 
-impl From<ApiError> for (StatusCode, String) {
+impl From<ApiError> for (StatusCode, String, bool) {
     fn from(err: ApiError) -> Self {
         match err {
-            ApiError::Database(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-            ApiError::Internal(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
+            ApiError::Database(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string(), false),
+            ApiError::Internal(e) => (StatusCode::INTERNAL_SERVER_ERROR, e, false),
         }
     }
 }
